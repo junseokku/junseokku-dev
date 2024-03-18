@@ -12,8 +12,8 @@ export function Header() {
                 Junseokku
             </Link>
             <div className="flex flex-row gap-2">
-                {MENU_ITEMS.map(({ name, href }, idx) => (
-                    <Link href={href}>{name}</Link>
+                {MENU_ITEMS.map(({ name, href }) => (
+                    <Link key={name} href={href}>{name}</Link>
                 ))}
             </div>
         </header>
