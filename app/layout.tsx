@@ -17,7 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} mx-auto max-w-xl py-8`}>
+      <body className={`${inter.className} mx-auto max-w-3xl py-8 flex flex-col gap-8`}>
         <Header />
         {children}
       </body>

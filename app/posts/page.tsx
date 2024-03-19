@@ -7,7 +7,11 @@ const PostLayout = ({ params }: { params: { slug: string } }) => {
         compareDesc(new Date(a.date), new Date(b.date))
     );
 
-    return <>{posts.map((post, idx) => (<PostCard key={idx} {...post} />))}</>;
+    return (
+        <div className="flex flex-col gap-5">
+            {posts.map((post, idx) => (<PostCard key={idx} {...post} />))}
+        </div>
+    );
 }
 
 export default PostLayout;

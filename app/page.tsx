@@ -1,7 +1,7 @@
 export default function Home() {
   return (
     <>
-      <div>hi</div>
+      <div>{`This is Junseokku's blog.`}</div>
     </>
   );
 }
