@@ -2,3 +2,6 @@
 
 .next/**/*
 .contentlayer/**/*
+node_modules/**/*/
+
+**/*.mdx

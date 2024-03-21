@@ -4,7 +4,7 @@ import { compareDesc } from 'date-fns';
 
 const PostLayout = () => {
   const posts = allPosts.sort((a, b) =>
-    compareDesc(new Date(a.date), new Date(b.date)),
+    compareDesc(new Date(a.createdAt), new Date(b.createdAt)),
   );
 
   return (
