@@ -25,7 +25,7 @@ const PostLayout = ({ params }: { params: { slug: string } }) => {
         </time>
         <h1 className="text-3xl font-bold">{post.title}</h1>
       </div>
-      <section className="prose">
+      <section className="prose max-w-3xl">
         <MDXContent />
       </section>
     </article>
