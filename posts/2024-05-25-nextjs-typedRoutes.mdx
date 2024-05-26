@@ -1,0 +1,262 @@
+---
+title: '[번역] 타입 안전성 있게 Next.js에서 라우팅 하기'
+createdAt: 2024-05-25
+author: Junseokku
+tags: [translate, app-router, typed-safety, routing, 타입, 안정성, 라우팅]
+categories: []
+summary: ''
+---
+
+> 원글: [https://www.flightcontrol.dev/blog/fix-nextjs-routing-to-have-full-type-safety](https://www.flightcontrol.dev/blog/fix-nextjs-routing-to-have-full-type-safety)
+
+깨진 링크들, 잘못된 형식의 쿼리 스트링, 그리고 누락된 라우팅 파라미터는 타입스크립트와 같은 타입시스템으로 모두 쉽게 해결할 수 있습니다.
+
+슬프게도, Next.js를 포함한 대부분 현대 라우팅 방식은 이러한 기능을 제공하지 않습니다.
+
+## NEXT.JS의 제한된 내장 타입 안정성
+
+Next.js는 [statically typed links](https://nextjs.org/docs/app/building-your-application/configuring/typescript#statically-typed-links)를 위한 실험적 기능 선택적이 있습니다. 이를 활성화하려면, `next.config.js` 파일에서 `experimental.typedRoutes`를 다음과 같이 설정하세요.
+
+```javascript
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    typedRoutes: true,
+  },
+}
+ 
+module.exports = nextConfig
+```
+이제 Next.js는 `.next/types`에 링크 정의를 생성하여 `<Link />` 컴포넌트의 `href` 속성의 기본 타입을 재정의합니다.
+```typescript
+import Link from 'next/link'
+ 
+// No TypeScript errors if href is a valid route
+<Link href="/about" />
+ 
+// TypeScript error
+<Link href="/aboot" />
+```
+좋은 시작이지만, 많은 제약들이 존재합니다.
+- 경로나 쿼리스트링 파라미터의 타입 검증이 없음.
+- 경로나 쿼리스트링 파라미터의 런타임 검증이 없음.
+- 동적 경로 자동 완성 기능 부재 - 많은 동적 라우팅을 포함한 큰 애플리케이션에서 매우 번거로움.
+- href에 `<Link href={{href: '/about', query: {ref: 'hello'}}} />`와 같은 객체를 전달할 때 타입 검증이 없음.(이는 app router에서 더이상 동작하지 않은 것 같아요.)
+- `useParam()`과 `useSearchParams`에 타입이나 런타임 검증이 없음.
+- 페이지 참조와 라우트 문자열의 결합 - 만약 경로를 재구조화한다면, 모든 링크를 변경해야 함.
+
+## NEXT.JS에서 이상적인 타입 안정성 라우팅
+완전한 기능을 갖춘 타입 안전 라우팅 시스템은 아래 사항을 지원해야 합니다.
+- 경로의 정적 타입 검증
+- 경로 파라미터의 정적 타입 검증
+- 쿼리스트링 파라미터의 정적 타입 검증
+- 경로 파라미터의 런타임 검증
+- 쿼리스트링 파라미터의 런타임 검증
+- 경로 URL에서 경로 이름의 분리(모든 링크 변경 없이, URL을 쉽게 재구성할 수 있게 함.)
+- `useParams()`과 `useSearchParams()`의 타입 안전
+- 페이지 props를 위한 경로 매개변수 타입의 간편한 재사용 
+
+타입 검증과 런타임 검증을 달성하기 위해, 훌륭한 [Zod](https://github.com/colinhacks/zod) library를 사용할 것입니다.
+
+### 동적 경로
+다음과 같은 경로 정의 인터페이스를 원합니다.
+```typescript
+//routes.ts
+import {z} from 'zod'
+
+export const OrgParams = z.object({orgId: z.string()})
+
+export const Routes = {
+  home: makeRoute(({orgId}) => `/org/${orgId}`, OrgParams)
+}
+```
+이를 다음과 같이 사용할 수 있습니다.
+```typescript
+import Link from 'next/link'
+import {Routes} from '../../routes.ts'
+
+<Link href={Routes.home({orgId: 'g4eion3e3'})} />
+```
+
+### 정적 경로
+같은 인터페이스를 정적 경로에서도 사용할 수 있습니다.
+```typescript
+//routes.ts
+import {z} from 'zod'
+
+export const Routes = {
+  about: makeRoute(() => `/about`, z.object({}) /* no params */)
+}
+```
+
+이를 다음과 같이 사용할 수 있습니다.
+```typescript
+import Link from 'next/link'
+import {Routes} from '../../routes.ts'
+ 
+<Link href={Routes.about()} />
+```
+
+### 쿼리 파라미터
+쿼리 파라미터도 다음과 같이 확장할 수 있습니다.
+```typescript
+//routes.ts
+import {z} from 'zod'
+
+export const SignupSearchParams = z.object({
+  invitationId: z.string().optional().nullable(),
+})
+
+export const Routes = {
+    signup: makeRoute(() => "/signup", z.object({}), SignupSearchParams),
+}
+```
+이를 다음과 같이 사용할 수 있습니다.
+```typescript
+import Link from 'next/link'
+import {Routes} from '../../routes.ts'
+ 
+<Link href={Routes.signup({}, {search: {invitationId: '8haf3dx'}})} />
+```
+
+### useParams()
+`Routes` 객체에서 경로 파라미터를 읽을 수 있습니다. 완전한 타입 안전성과 런타임 검증이 제공됩니다.
+```typescript
+import {Routes} from '../../routes.ts'
+
+// type = {orgId: string}
+const params = Routes.home.useParams()
+```
+
+### useSearchParams()
+`Routes`에서 쿼리 파라미터를 읽을 수 있습니다. 완전한 타입 안전성과 런타임 검증이 제공됩니다.
+```typescript
+import {Routes} from '../../routes.ts'
+
+// type = {invitationId: string}
+const searchParams = Routes.signup.useSearchParams()
+```
+
+### Page props types
+`Routes`는 page prop types를 제공합니다.
+```typescript
+import {Routes} from '../../routes.ts'
+
+type HomePageProps = {
+  params: typeof Routes.home.params
+}
+
+export default async function HomePage({
+  params: {organizationId},
+}: HomePageProps) {
+  // render stuff
+}
+```
+
+## MAKEROUTE() 유틸리티 
+위의 모든 기능을 구현하기 위해 필요한 유틸리티 코드는 다음과 같습니다.
+```
+npm install zod query-string
+```
+
+```typescript
+import {z} from 'zod'
+import {useParams as useNextParams, useSearchParams as useNextSearchParams} from "next/navigation"
+import queryString from "query-string"
+
+type RouteBuilder<Params extends z.ZodSchema, Search extends z.ZodSchema> = {
+  (p?: z.input<Params>, options?: {search?: z.input<Search>}): string
+  parse: (input: z.input<Params>) => z.output<Params>
+  useParams: () => z.output<Params>
+  useSearchParams: () => z.output<Search>
+  params: z.output<Params>
+}
+
+const empty: z.ZodSchema = z.object({})
+
+function makeRoute<Params extends z.ZodSchema, Search extends z.ZodSchema>(
+  fn: (p: z.input<Params>) => string,
+  paramsSchema: Params = empty as Params,
+  search: Search = empty as Search,
+): RouteBuilder<Params, Search> {
+  const routeBuilder: RouteBuilder<Params, Search> = (params, options) => {
+    const baseUrl = fn(params)
+    const searchString = options?.search && queryString.stringify(options.search)
+    return [baseUrl, searchString ? `?${searchString}` : ""].join("")
+  }
+  
+ routeBuilder.parse = function parse(args: z.input<Params>): z.output<Params> {
+  const res = paramsSchema.safeParse(args)
+   if (!res.success) {
+     const routeName =
+       Object.entries(Routes).find(([, route]) => (route as unknown) === routeBuilder)?.[0] ||
+       "(unknown route)"
+     throw new Error(`Invalid route params for route ${routeName}: ${res.error.message}`)
+   }
+   return res.data
+ }
+
+ routeBuilder.useParams = function useParams(): z.output<Params> {
+   const res = paramsSchema.safeParse(useNextParams())
+   if (!res.success) {
+     const routeName =
+       Object.entries(Routes).find(([, route]) => (route as unknown) === routeBuilder)?.[0] ||
+       "(unknown route)"
+     throw new Error(`Invalid route params for route ${routeName}: ${res.error.message}`)
+   }
+   return res.data
+ }
+
+ routeBuilder.useSearchParams = function useSearchParams(): z.output<Search> {
+   const res = search.safeParse(convertURLSearchParamsToObject(useNextSearchParams()))
+   if (!res.success) {
+     const routeName =
+       Object.entries(Routes).find(([, route]) => (route as unknown) === routeBuilder)?.[0] ||
+       "(unknown route)"
+     throw new Error(`Invalid search params for route ${routeName}: ${res.error.message}`)
+   }
+   return res.data
+ }
+
+
+  // set the type
+  routeBuilder.params = undefined as z.output<Params>
+  // set the runtime getter
+  Object.defineProperty(routeBuilder, "params", {
+    get() {
+      throw new Error(
+        "Routes.[route].params is only for type usage, not runtime. Use it like `typeof Routes.[routes].params`",
+      )
+    },
+  })
+
+  return routeBuilder
+}
+
+export function convertURLSearchParamsToObject(
+  params: ReadonlyURLSearchParams | null,
+): Record<string, string | string[]> {
+  if (!params) {
+    return {}
+  }
+
+  const obj: Record<string, string | string[]> = {}
+  for (const [key, value] of params.entries()) {
+    if (params.getAll(key).length > 1) {
+      obj[key] = params.getAll(key)
+    } else {
+      obj[key] = value
+    }
+  }
+  return obj
+}
+```
+
+### 숫자와 불리언 쿼리스트링을 위한 보너스
+검색 쿼리 파라미터는 브라우저에서 항상 문자열으로 입력되므로 숫자와 불리언의 경우 다음과 같이 zod의 `coerce` 기능을 사용해야 합니다.
+```typescript
+export const LogsSearchParams = z.object({
+  logsId: z.coerce.number()
+  fullscreen: z.coerce.boolean().default(false),
+})
+```
