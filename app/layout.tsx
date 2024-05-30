@@ -1,9 +1,7 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import { Header } from './components/Header';
-
-const inter = Inter({ subsets: ['latin'] });
+import { nanumGothic } from './libs/font';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -18,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.className} mx-auto max-w-3xl py-8 flex flex-col gap-8`}
+        className={`${nanumGothic.className} mx-auto max-w-3xl py-8 flex flex-col gap-8`}
       >
         <Header />
         {children}
