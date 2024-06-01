@@ -5,6 +5,8 @@
 :root {
   --text-color: #000000;
   --background-color: #ffffff;
+
+  scrollbar-gutter: stable;
 }
 
 .dark {
