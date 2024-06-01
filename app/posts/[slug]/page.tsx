@@ -20,14 +20,18 @@ const PostLayout = ({ params }: { params: { slug: string } }) => {
   return (
     <article>
       <div className="mb-8 text-center">
-        <time dateTime={post.createdAt} className="mb-1 text-xs text-gray-600">
-          {format(parseISO(post.createdAt), 'LLLL d, yyyy')}
-        </time>
+        <div className="flex gap-2 justify-center mb-1">
+          <time dateTime={post.createdAt} className="text-xs text-gray-600">
+            {format(parseISO(post.createdAt), 'yyyy.MM.dd')}
+          </time>
+          <span className="text-xs text-gray-600">|</span>
+          <span className="text-xs text-gray-600">{`${post.readingMinutes} min`}</span>
+        </div>
         <h1 className="text-3xl font-bold">{post.title}</h1>
       </div>
-      <section className="prose dark:prose-invert max-w-3xl">
+      <article className="prose prose-stone dark:prose-invert max-w-3xl">
         <MDXContent />
-      </section>
+      </article>
     </article>
   );
 };

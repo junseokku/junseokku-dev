@@ -32,7 +32,7 @@ export const ToggleDarkMode = () => {
 
   return (
     <button onClick={toggleTheme}>
-      {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+      {theme === 'dark' ? <SunIcon width={20} height={20} /> : <MoonIcon />}
     </button>
   );
 };

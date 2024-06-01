@@ -10,7 +10,7 @@ export function PostCard(post: Post) {
         dateTime={post.createdAt}
         className="mb-2 block text-xs text-gray-600"
       >
-        {format(parseISO(post.createdAt), 'LLLL d, yyyy')}
+        {format(parseISO(post.createdAt), 'yyyy.MM.dd')}
       </time>
     </Link>
   );

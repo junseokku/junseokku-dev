@@ -1,7 +1,7 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import { Header } from './components/Header';
-import { nanumGothic } from './libs/font';
+import { pretendard } from './libs/font';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -16,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${nanumGothic.className} mx-auto max-w-3xl py-8 flex flex-col gap-8 text-textColor bg-backgroundColor`}
+        className={`${pretendard.className} mx-auto max-w-3xl py-8 flex flex-col gap-8 text-textColor bg-backgroundColor`}
       >
         <Header />
         {children}
