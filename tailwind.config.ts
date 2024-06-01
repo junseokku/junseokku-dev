@@ -13,9 +13,13 @@ const config: Config = {
         'gradient-conic':
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
+      colors: {
+        textColor: 'var(--text-color)',
+        backgroundColor: 'var(--background-color)',
+      },
     },
   },
-  darkMode: 'selector',
+  darkMode: 'class',
   plugins: [require('@tailwindcss/typography')],
 };
 export default config;

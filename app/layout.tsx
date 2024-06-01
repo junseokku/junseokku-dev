@@ -16,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${nanumGothic.className} mx-auto max-w-3xl py-8 flex flex-col gap-8`}
+        className={`${nanumGothic.className} mx-auto max-w-3xl py-8 flex flex-col gap-8 text-textColor bg-backgroundColor`}
       >
         <Header />
         {children}
