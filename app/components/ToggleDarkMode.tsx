@@ -31,7 +31,10 @@ export const ToggleDarkMode = () => {
   };
 
   return (
-    <button onClick={toggleTheme}>
+    <button
+      onClick={toggleTheme}
+      className="hover:bg-[#EDEDED] dark:hover:bg-opacity-10 px-2 py-1 rounded-lg"
+    >
       {theme === 'dark' ? <SunIcon width={20} height={20} /> : <MoonIcon />}
     </button>
   );

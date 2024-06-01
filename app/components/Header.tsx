@@ -14,7 +14,7 @@ export function Header() {
           <Link
             key={name}
             href={href}
-            className="px-2 py-1 rounded-lg hover:bg-black hover:bg-opacity-20"
+            className="px-2 py-1 rounded-lg hover:bg-[#EDEDED] dark:hover:bg-opacity-10"
           >
             {name}
           </Link>
