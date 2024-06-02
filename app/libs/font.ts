@@ -1,5 +1,5 @@
-import { Nanum_Gothic } from '@next/font/google';
-import localFont from '@next/font/local';
+import { Nanum_Gothic } from 'next/font/google';
+import localFont from 'next/font/local';
 
 export const nanumGothic = Nanum_Gothic({
   subsets: ['latin'],
