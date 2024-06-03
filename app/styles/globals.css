@@ -13,3 +13,8 @@
   --text-color: #ffffff;
   --background-color: #111111;
 }
+
+html {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
