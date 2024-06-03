@@ -1,32 +1,18 @@
 'use client';
 
 import { MoonIcon, SunIcon } from '@radix-ui/react-icons';
-import { useState, Dispatch, SetStateAction, useLayoutEffect } from 'react';
-
-const Theme = {
-  Light: 'light',
-  Dark: 'dark',
-  System: 'system',
-} as const;
-
-type ThemeKeys = (typeof Theme)[keyof typeof Theme];
+import { useTheme } from 'next-themes';
 
 /** system일 경우 추가 */
 export const ToggleDarkMode = () => {
-  const [theme, setTheme] = useState<ThemeKeys>('system');
-
-  useDarkModeInitiailizer(setTheme);
+  const { resolvedTheme: theme, setTheme } = useTheme();
 
   const toggleTheme = () => {
     if (theme === 'dark') {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
       setTheme('light');
       return;
     }
 
-    document.documentElement.classList.add('dark');
-    localStorage.setItem('theme', 'dark');
     setTheme('dark');
   };
 
@@ -42,22 +28,4 @@ export const ToggleDarkMode = () => {
       )}
     </button>
   );
-};
-
-const useDarkModeInitiailizer = (
-  setTheme: Dispatch<SetStateAction<ThemeKeys>>,
-) => {
-  // SSR 문제로 다른 곳으로 옮기기
-  useLayoutEffect?.(() => {
-    if (!('theme' in localStorage)) {
-      localStorage.setItem('theme', 'system');
-      return;
-    }
-
-    if (localStorage.theme === 'dark') {
-      document.documentElement.classList.add('dark');
-      setTheme('dark');
-      return;
-    }
-  }, [setTheme]);
 };
