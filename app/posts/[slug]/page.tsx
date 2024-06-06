@@ -1,17 +1,15 @@
 import { format, parseISO } from 'date-fns';
 import { allPosts } from 'contentlayer/generated';
 import { useMDXComponent } from 'next-contentlayer/hooks';
+import { Metadata } from 'next';
+import { myInfo } from 'app/constants/myInfo';
+
+type Params = { params: { slug: string } };
 
 export const generateStaticParams = async () =>
   allPosts.map((post) => ({ slug: post._raw.flattenedPath }));
 
-export const generateMetadata = ({ params }: { params: { slug: string } }) => {
-  const post = allPosts.find((post) => post._raw.flattenedPath === params.slug);
-  if (!post) throw new Error(`Post not found for slug: ${params.slug}`);
-  return { title: post.title };
-};
-
-const PostLayout = ({ params }: { params: { slug: string } }) => {
+const PostLayout = ({ params }: Params) => {
   const post = allPosts.find((post) => post._raw.flattenedPath === params.slug);
   if (!post) throw new Error(`Post not found for slug: ${params.slug}`);
 
@@ -35,5 +33,33 @@ const PostLayout = ({ params }: { params: { slug: string } }) => {
     </article>
   );
 };
+
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const targetPost = allPosts.find(
+    (post) => post._raw.flattenedPath === params.slug,
+  );
+
+  // TODO redirect to 404
+  if (!targetPost) throw new Error(`Post not found for slug: ${params.slug}`);
+
+  const title = `${myInfo.blog.name}, ${targetPost.title}`;
+  const description = `${myInfo.blog.name}, ${targetPost.summary}`;
+  const url = `${myInfo.blog.url}${targetPost.url}`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      url,
+      title,
+      description,
+    },
+    twitter: {
+      title,
+      description,
+    },
+  };
+}
 
 export default PostLayout;

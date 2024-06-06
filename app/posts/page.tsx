@@ -1,12 +1,8 @@
 import { PostCard } from 'app/components/PostCard';
+import { myInfo } from 'app/constants/myInfo';
 import { allPosts } from 'contentlayer/generated';
 import { compareDesc } from 'date-fns';
 import { type Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'posts',
-  description: 'posts',
-};
 
 const PostLayout = () => {
   const posts = allPosts.sort((a, b) =>
@@ -21,5 +17,26 @@ const PostLayout = () => {
     </div>
   );
 };
+
+export async function generateMetadata(): Promise<Metadata> {
+  const title = `${myInfo.blog.name}, 게시글 목록`;
+  const description = `${myInfo.blog.name}, 모든 게시글 목록`;
+  const url = `${myInfo.blog.url}/posts`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      url,
+      title,
+      description,
+    },
+    twitter: {
+      title,
+      description,
+    },
+  };
+}
 
 export default PostLayout;
