@@ -4,6 +4,7 @@ import { myInfo } from './myInfo';
 export const SEOConfig: Metadata = {
   title: myInfo.blog.name,
   description: myInfo.description,
+  metadataBase: new URL(myInfo.blog.url),
   alternates: { canonical: myInfo.blog.url },
   viewport: { width: 'device-width', initialScale: 1 },
   keywords: ['junseokku', 'blog', 'junseokku.dev', '이준석'],

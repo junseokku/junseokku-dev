@@ -8,7 +8,7 @@ export const myInfo = {
     url: 'https://junseokku.dev',
   },
   social: {
-    github: 'https://junseokku.dev',
+    github: 'https://github.com/junseokku',
     linkedin: 'https://linkedin.com/in/junseokku',
   },
   thumbnail: '', // TODO
