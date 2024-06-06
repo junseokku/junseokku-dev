@@ -10,10 +10,7 @@ export const SEOConfig: Metadata = {
   referrer: 'origin-when-cross-origin',
   creator: myInfo.name,
   publisher: myInfo.name,
-  authors: [
-    { name: myInfo.nickname },
-    // TODO - { url: 'https://junseokku.dev' },
-  ],
+  authors: [{ name: myInfo.nickname }, { url: myInfo.blog.url }],
   twitter: {
     title: myInfo.blog.name,
     description: myInfo.description,

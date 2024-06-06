@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://junseokku.dev
+
+# Sitemaps
+Sitemap: https://junseokku.dev/sitemap.xml

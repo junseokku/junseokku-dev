@@ -50,6 +50,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     title,
     description,
     alternates: { canonical: url },
+    keywords: targetPost.tags,
     openGraph: {
       url,
       title,
