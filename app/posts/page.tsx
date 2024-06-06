@@ -1,6 +1,12 @@
 import { PostCard } from 'app/components/PostCard';
 import { allPosts } from 'contentlayer/generated';
 import { compareDesc } from 'date-fns';
+import { type Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'posts',
+  description: 'posts',
+};
 
 const PostLayout = () => {
   const posts = allPosts.sort((a, b) =>
