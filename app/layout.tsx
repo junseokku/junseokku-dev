@@ -4,6 +4,7 @@ import { Header } from './components/Header';
 import { pretendard } from './libs/font';
 import { Providers } from './components/Providers';
 import { SEOConfig } from './constants/SEOConfig';
+import { GoogleAnlytics } from './libs/GoogleAnalytics';
 
 export default function RootLayout({
   children,
@@ -22,6 +23,7 @@ export default function RootLayout({
           </div>
         </Providers>
       </body>
+      <GoogleAnlytics />
     </html>
   );
 }
