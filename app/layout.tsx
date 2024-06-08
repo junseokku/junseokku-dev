@@ -5,6 +5,7 @@ import { pretendard } from './libs/font';
 import { Providers } from './components/Providers';
 import { SEOConfig } from './constants/SEOConfig';
 import { GoogleAnlytics } from './libs/GoogleAnalytics';
+import { Footer } from './components/Footer';
 
 export default function RootLayout({
   children,
@@ -19,6 +20,7 @@ export default function RootLayout({
             <div className="max-md:px-6 max-w-3xl w-full py-8 flex flex-col gap-8">
               <Header />
               {children}
+              <Footer />
             </div>
           </div>
         </Providers>

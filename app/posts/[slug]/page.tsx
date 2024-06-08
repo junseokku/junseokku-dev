@@ -33,6 +33,7 @@ const PostLayout = ({ params }: Params) => {
       <article className="prose prose-stone dark:prose-invert max-w-3xl">
         <MDXContent />
       </article>
+      {/* TODO - post footer */}
       {/* post comment */}
       <Giscus />
     </section>
