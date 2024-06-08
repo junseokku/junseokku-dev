@@ -11,5 +11,10 @@ export const myInfo = {
     github: 'https://github.com/junseokku',
     linkedin: 'https://linkedin.com/in/junseokku',
   },
+  comment: {
+    repo: 'junseokku/contentlayer-blog',
+    repoId: 'R_kgDOKedY1A',
+    categoryId: 'DIC_kwDOKedY1M4Cf8Xu',
+  },
   thumbnail: '', // TODO
 };

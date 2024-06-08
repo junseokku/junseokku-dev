@@ -3,6 +3,7 @@ import { allPosts } from 'contentlayer/generated';
 import { useMDXComponent } from 'next-contentlayer/hooks';
 import { Metadata } from 'next';
 import { myInfo } from 'app/constants/myInfo';
+import { Giscus } from 'app/libs/Giscus';
 
 type Params = { params: { slug: string } };
 
@@ -16,9 +17,10 @@ const PostLayout = ({ params }: Params) => {
   const MDXContent = useMDXComponent(post.body.code);
 
   return (
-    <article>
-      <div className="mb-8 text-center">
-        <div className="flex gap-2 justify-center mb-1">
+    <section className="flex flex-col gap-8">
+      {/* post header */}
+      <div className="text-center">
+        <div className="flex gap-2 justify-center">
           <time dateTime={post.createdAt} className="text-xs text-gray-600">
             {format(parseISO(post.createdAt), 'yyyy.MM.dd')}
           </time>
@@ -27,10 +29,13 @@ const PostLayout = ({ params }: Params) => {
         </div>
         <h1 className="text-3xl font-bold">{post.title}</h1>
       </div>
+      {/* post article */}
       <article className="prose prose-stone dark:prose-invert max-w-3xl">
         <MDXContent />
       </article>
-    </article>
+      {/* post comment */}
+      <Giscus />
+    </section>
   );
 };
 
