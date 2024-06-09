@@ -42,7 +42,8 @@ export default makeSource({
         rehypePrettyCode,
         {
           theme: 'vitesse-dark',
-          keepBackground: false,
+          keepBackground: true,
+          grid: true,
         },
       ],
       [

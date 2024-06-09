@@ -2,11 +2,117 @@
 @tailwind components;
 @tailwind utilities;
 
+/* TODO prose.css로 분리하기 -> 분리했을때 기본 tailwindcss 스타일이 덮여쓰여지는 문제 있어서 임시로 이렇게  */
+@layer components {
+  /* for rehype-auto-heading */
+  .prose a.anchor {
+    @apply no-underline relative;
+  }
+
+  .prose a.anchor:hover::before {
+    @apply opacity-100;
+  }
+
+  .prose h1 a.anchor:before,
+  .prose h2 a.anchor:before,
+  .prose h3 a.anchor:before {
+    @apply absolute left-[-0.75em] opacity-0 text-gray-400 dark:text-opacity-40;
+    content: '#';
+  }
+
+  .prose
+    :where(code):not(
+      :where([class~='not-prose'], [class~='not-prose'] *)
+    )::before,
+  .prose
+    :where(code):not(
+      :where([class~='not-prose'], [class~='not-prose'] *)
+    )::after {
+    @apply content-none;
+  }
+
+  .prose blockquote p:first-of-type::before,
+  .prose blockquote p:last-of-type::before {
+    @apply content-none;
+  }
+
+  /* ==============================[for codeblock]============================== */
+  /* TODO 다크/라이트 모드 적용 - 지금 의도한 대로 적용안됨. */
+  .prose pre {
+    @apply px-px rounded-md border-gray-600 border-opacity-40 border;
+  }
+
+  .prose pre::-webkit-scrollbar {
+    display: none;
+  }
+
+  .prose pre {
+    scrollbar-width: none;
+  }
+
+  .prose pre span[data-line] {
+    @apply inline-block px-4 py-0.5 leading-snug;
+  }
+
+  .prose code span[data-highlighted-line] {
+    @apply border-l-2 bg-opacity-20 
+           border-blue-400 dark:border-blue-500 bg-indigo-400 dark:bg-slate-700;
+  }
+
+  .prose span mark[data-highlighted-chars] {
+    @apply bg-teal-400  bg-opacity-25;
+  }
+
+  .prose span mark[data-highlighted-chars][data-chars-id='y'] {
+    @apply bg-yellow-400  bg-opacity-25;
+  }
+
+  .prose span mark[data-highlighted-chars][data-chars-id='b'] {
+    @apply bg-sky-400 bg-opacity-25;
+  }
+
+  .prose div[data-rehype-pretty-code-title],
+  .prose figcaption[data-rehype-pretty-code-title] {
+    @apply px-3 py-1.5 text-sm font-medium border border-b-0  rounded-t-lg text-gray-200 border-gray-700 bg-gray-700;
+  }
+  .prose div[data-rehype-pretty-code-title] + pre,
+  .prose figcaption[data-rehype-pretty-code-title] + pre {
+    @apply mt-0 rounded-t-none;
+  }
+
+  .prose code[data-line-numbers] {
+    counter-reset: line;
+  }
+
+  .prose code[data-line-numbers] > [data-line]::before {
+    counter-increment: line;
+    content: counter(line);
+
+    /* Other styling */
+    display: inline-block;
+    width: 1rem;
+    margin-right: 2rem;
+    text-align: right;
+    color: gray;
+  }
+
+  .prose code[data-line-numbers-max-digits='2'] > [data-line]::before {
+    width: 2rem;
+  }
+
+  .prose code[data-line-numbers-max-digits='3'] > [data-line]::before {
+    width: 3rem;
+  }
+  /* ==============================[for codeblock]============================== */
+}
+
 :root {
+  /* TODO 테마 색상 이름 변경 및 border, 다른 글자 변수 추가 */
   --text-color: #000000;
   --background-color: #ffffff;
 
   scrollbar-gutter: stable;
+  scroll-behavior: smooth;
 }
 
 .dark {
