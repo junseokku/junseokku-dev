@@ -24,7 +24,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
 const generateSitemapPosts = (): MetadataRoute.Sitemap => {
   return allPosts.map((post) => ({
-    url: `${myInfo.blog.url}/${post._raw.flattenedPath}`,
+    url: `${myInfo.blog.url}/posts/${post._raw.flattenedPath}`,
     lastModified: new Date(post.updatedAt ?? post.createdAt),
     changeFrequency: 'daily',
     priority: 0.8,
