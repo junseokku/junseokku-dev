@@ -18,5 +18,8 @@ const config: Config = {
   },
   darkMode: 'class',
   plugins: [require('@tailwindcss/typography')],
+  future: {
+    hoverOnlyWhenSupported: true,
+  },
 };
 export default config;
