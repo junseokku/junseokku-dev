@@ -110,6 +110,8 @@
   /* TODO 테마 색상 이름 변경 및 border, 다른 글자 변수 추가 */
   --text-color: #000000;
   --background-color: #ffffff;
+  --border-color: #e5e7eb;
+  --text-gray-color: #4b5563;
 
   scrollbar-gutter: stable;
   scroll-behavior: smooth;
@@ -118,6 +120,8 @@
 .dark {
   --text-color: #ffffff;
   --background-color: #111111;
+  --border-color: #1f2937;
+  --text-gray-color: #9ca3af;
 }
 
 html {

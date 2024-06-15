@@ -11,6 +11,8 @@ const config: Config = {
       colors: {
         textColor: 'var(--text-color)',
         backgroundColor: 'var(--background-color)',
+        borderColor: 'var(--border-color)',
+        textGrayColor: 'var(--text-gray-color)',
       },
     },
   },

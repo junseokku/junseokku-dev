@@ -21,11 +21,14 @@ const PostLayout = ({ params }: Params) => {
       {/* post header */}
       <div className="text-center">
         <div className="flex gap-2 justify-center">
-          <time dateTime={post.createdAt} className="text-xs text-gray-600">
+          <time
+            dateTime={post.createdAt}
+            className="text-xs text-textGrayColor"
+          >
             {format(parseISO(post.createdAt), 'yyyy.MM.dd')}
           </time>
-          <span className="text-xs text-gray-600">|</span>
-          <span className="text-xs text-gray-600">{`${post.readingMinutes} min`}</span>
+          <span className="text-xs text-textGrayColor">|</span>
+          <span className="text-xs text-textGrayColor">{`${post.readingMinutes} min`}</span>
         </div>
         <h1 className="text-3xl font-bold">{post.title}</h1>
       </div>

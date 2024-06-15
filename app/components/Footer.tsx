@@ -3,8 +3,8 @@ import { myInfo } from 'app/constants/myInfo';
 export const Footer = () => {
   return (
     <footer className="flex flex-col gap-4">
-      <hr className="border-1 border-gray-200 dark:border-gray-800" />
-      <p className="text-center text-xs text-gray-400">
+      <hr className="border-1 border-borderColor" />
+      <p className="text-center text-xs text-textGrayColor">
         <span>© 2024</span>
         <a
           href={myInfo.repoUrl}
