@@ -10,11 +10,11 @@ const PostLayout = () => {
   );
 
   return (
-    <div className="flex flex-col gap-5">
+    <main className="flex flex-col gap-5">
       {posts.map((post, idx) => (
         <PostCard key={idx} {...post} />
       ))}
-    </div>
+    </main>
   );
 };
 

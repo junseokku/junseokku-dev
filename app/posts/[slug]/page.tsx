@@ -17,7 +17,7 @@ const PostLayout = ({ params }: Params) => {
   const MDXContent = useMDXComponent(post.body.code);
 
   return (
-    <section className="flex flex-col gap-8">
+    <main className="flex flex-col gap-8">
       {/* post header */}
       <div className="text-center">
         <div className="flex gap-2 justify-center">
@@ -36,7 +36,7 @@ const PostLayout = ({ params }: Params) => {
       {/* TODO - post footer */}
       {/* post comment */}
       <Giscus />
-    </section>
+    </main>
   );
 };
 

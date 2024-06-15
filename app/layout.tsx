@@ -17,11 +17,11 @@ export default function RootLayout({
       <body>
         <Providers>
           <div className={`${pretendard.className} flex justify-center`}>
-            <main className="max-md:px-6 max-w-3xl w-full py-8 flex flex-col gap-8">
+            <div className="max-md:px-6 max-w-3xl w-full py-8 flex flex-col gap-8">
               <Header />
               {children}
               <Footer />
-            </main>
+            </div>
           </div>
         </Providers>
       </body>
