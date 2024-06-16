@@ -22,10 +22,7 @@ export default function Home() {
       {/* TODO 미리캔버스 공유 뷰어 */}
       {/* 설명 영역 */}
       <p className="prose prose-neutral dark:prose-invert max-w-full">
-        <span className="block">
-          개발자로서 공부하고 일하며 얻은 지식과 경험을 기록하는 블로그입니다.
-          성장하기 위해 꾸준하고 틈틈이 글을 작성하려고 노력하고 있습니다.
-        </span>
+        <span className="block">{myInfo.blog.description}</span>
       </p>
       {/* 최근 포스팅 영역 */}
     </main>

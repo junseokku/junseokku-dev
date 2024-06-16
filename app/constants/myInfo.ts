@@ -6,6 +6,8 @@ export const myInfo = {
   blog: {
     name: 'junseokku',
     url: 'https://junseokku.dev',
+    description:
+      '개발자로서 공부하고 일하며 얻은 지식과 경험을 기록하는 블로그입니다. 성장하기 위해 꾸준하고 틈틈이 글을 작성하려고 노력하고 있습니다.',
   },
   social: {
     github: 'https://github.com/junseokku',

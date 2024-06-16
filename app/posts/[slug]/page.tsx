@@ -34,6 +34,7 @@ const PostLayout = ({ params }: Params) => {
       </div>
       {/* post article */}
       <article className="prose prose-stone dark:prose-invert max-w-3xl">
+        <hr className="border-1 border-borderColor" />
         <MDXContent />
       </article>
       {/* TODO - post footer */}
