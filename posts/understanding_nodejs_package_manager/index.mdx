@@ -1,0 +1,104 @@
+---
+title: "Node.js Package Manager 이해하기 (npm, yarm, yarn berry, pnpm)"
+createdAt: 2024-06-23
+author: junseokku
+tags: [nodejs, javascript, package, manager, npm, yarn, pnpm]
+categories: []
+summary: "Node.js에서 사용하는 패키지를 이해한다. 자주 사용되는 패키지 매니저인 npm, yarn, pnpm, yarn berry를 가볍게 알아본다."
+---
+## 패키지 매니저란?
+Node.js 애플리케이션을 개발하며 외부 패키지를 사용하지 않는 일은 거의 없습니다.
+패키지를 대부분 사용할텐데, 이를 관리하는 패키지 매니저에 대해 알아보겠습니다.
+(패키지 매니저는 소프트웨어 분야에서 통용적으로 사용하는 개념입니다. 이 포스팅에서는 Node.js의 패키지 매니저를 말합니다.)
+우선 패키지란 무엇일까요?
+[npm docs](https://docs.npmjs.com/about-packages-and-modules)에 적힌 일부 내용입니다.
+
+##### About packages
+> 패키지는 package.json로 설명되는 파일 또는 디렉토리이다. 패키지는 npm registry에 배포를 위해 package.json을 포함해야 한다.
+
+##### About modules
+> 모듈은 require()함수에 의해 로드될 수 있는 node_modules에 존재하는 파일 또는 폴더이다.
+
+패키지는 설명할 수 있는 파일을 가져야 하고, 배포될 수 있다고 합니다. 
+배포된다는 건 다른 사람들이 다운로드하여 사용할 수 있고, 모듈화된 재사용성 있는 코드라고 말할 수 있겠죠.
+즉 패키지는 <b>모듈화된 코드를 배포하기 위한 단위</b>라고 해석할 수 있습니다. 
+
+패키지는 패키지를 참조할 수 있습니다. 
+이런 관계를 의존성이라고 합니다. 대규모 프로젝트에서는 의존성이 많고 복잡합니다. 
+복잡하고 거대한 의존성을 일관성있고 효율적으로 관리하면 시간도 단축되고 개발자 경험에 도움이 될 겁니다. 
+이를 관리하는 것이 패키지 매니저 주요 기능 중 하나입니다.
+또 다른 주요 기능들을 간단히 살펴보겠습니다.
+- metadata 작성 및 관리
+- 의존성 추가/설치/업데이트/삭제
+- 스크립트 실행
+- 패키지 배포
+- 보안 검사
+
+## npm 소개 및 단점
+npm은 2010년 1월에 나온 최초의 Node.js 패키지 매니저입니다.
+Node.js는 패키지 매니저로 npm을 기본적으로 사용합니다. 
+pakcage.json, 의존성을 node_modules에서 관리하는 것, 실행 스크립트 등등 이러한 개념들이 npm에 의해 탄생되었습니다. 
+yarn이 공개되기 전, 과거 npm은 몇 가지 문제점을 가지고 있었습니다.
+
+### 의존성 설치 속도 저하
+의존성이 복잡하고 많아지면 설치 속도가 저하되었습니다. 
+의존성 해결 과정에서 시스템 리소스를 많이 잡아먹었습니다. 의존성 설치 방식이 직렬으로 처리되었기에 시간이 오래 소요되었습니다.
+또한 다른 패키지 간에 동일한 의존성이 존재할 경우, 여러 번 설치되는 문제도 있었습니다.
+
+### 비결정적인 버전
+같은 package.json 파일을 사용하더라도, 시스템에 따라 다른 의존성 버전이 설치될 수 있었습니다.
+npm이 버전 범위를 처리하는 방식과 일관된 의존성 설치를 lock하는 패커니즘이 부족했기 때문입니다.
+(npm의 버전 처리 방식은 [Semantic Versioning](https://semver.org/)를 사용합니다.)
+
+### 보안 문제
+npm은 패키지 무결성을 검증하는 마땅한 메커니즘이 없었고, 변조되거나 악의적인 패키지가 감지되지 않고 설치될 수 있었습니다.
+
+
+## yarn의 등장
+위에서 서술한 npm의 문제점들은 업계 전반의 엔지니어들이 직면했던 문제였습니다.
+Facebook을 중심으로 Exponent, Google, 그리고 Tilde 등 엔지니어들이 협력하여, 이런 문제를 해결하고자 새로운 패키지 매니저인 yarn을 만들게 되었습니다.
+yarn에서 개선된 점은 아래와 같습니다.
+### lockfiles로 일관성 있는 의존성 설치
+lockfiles는 특정한 버전으로 의존성을 고정하고, 모든 기기에서 node_modules가 정확한 파일 구조가 되도록 보장합니다.
+
+### 체크섬을 통한 동일한 패키지 설치
+각 패키지를 다운로드할 때 체크섬을 사용하여 무결성을 검증합니다. 체크섬도 lockfiles에 저장됩니다.
+
+### 병렬 설치
+의존성을 병렬로 설치하여 설치 시간을 단축시켰습니다.
+
+현재는 yarn 1.x 버전은 yasn classic으로 불리며, [더 이상 개발되지 않습니다](https://github.com/yarnpkg/yarn?tab=readme-ov-file#%E2%84%B9%EF%B8%8F-important-note).
+버그나 문제가 발생한 경우 후술할 [yarn berry](https://github.com/yarnpkg/berry)로 마이그레이션하는 것을 권장하고 있습니다.
+
+## npm과 yarn의 공통 문제점
+npm과 yarn의 초기 버전에는 공통적으로 가지고 있던 문제점들이 있었습니다.
+
+### node_modules 폴더의 크기
+![deep_depth_of_node_modules](./deep_depth_of_node_modules.png)
+앞서 <b>npm 소개 및 단점</b> 작성했던 <b>의존성 설치 속도 저하</b> 문제와 같습니다.
+여전히 의존성이 많아질수록 node_modules 폴더의 크기가 커졌고, 동일한 패키지가 여러 번 중복으로 설치되는 문제도 있었습니다.
+
+### 호이스팅 기법으로 인한 유령 의존성 
+![hoisting_dependency](posts/understanding_nodejs_package_manager/hoisting_dependency.png)
+앞서 동일한 패키지가 중복으로 설치되는 문제가 있었습니다. 이를 방지하기 위해 호이스팅 기법이 적용되었습니다.
+호이스팅 기법은 중복되는 의존성을 상위로 올려서 중복을 방지하는 것입니다.
+위 이미지를 예시로 사용해보겠습니다. 왼쪽 트리에서 `A(1.0)`, `B(1.0)` 패키지는 두 번 설치되어 중복이 발생합니다.
+중복 방지를 위해 오른쪽 트리처럼 `A(1.0)`, `B(1.0)` 패키지를 상위로 올려 한 번만 설치됩니다.
+
+호이스팅 기법이 적용되면서 암묵적인 패키지들을 참조할 수 있게 되는 문제가 발생했습니다.
+이렇게 직접적으로 명시되지 않은 의존성을 사용할 수 있는 것을 유령 의존성(Phantom Dependency)라고 합니다. 
+이는 패키지를 제거했을때 예기치 않은 문제를 일으키는 등 의존성 관리를 어렵게 만듭니다.
+
+
+
+
+## 섹션 2
+
+## 결론
+
+## 참고 자료
+- https://yceffort.kr/2022/05/npm-vs-yarn-vs-pnpm
+- https://engineering.fb.com/2016/10/11/web/yarn-a-new-package-manager-for-javascript/
+- https://blog.dramancompany.com/2023/02/%EB%A6%AC%EB%A9%A4%EB%B2%84-%EC%9B%B9-%EC%84%9C%EB%B9%84%EC%8A%A4-%EC%A2%8C%EC%B6%A9%EC%9A%B0%EB%8F%8C-yarn-berry-%EB%8F%84%EC%9E%85%EA%B8%B0/
+- https://medium.com/wantedjobs/yarn-berry-%EC%A0%81%EC%9A%A9%EA%B8%B0-1-e4347be5987
+- https://toss.tech/article/node-modules-and-yarn-berry
