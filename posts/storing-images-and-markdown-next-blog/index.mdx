@@ -1,0 +1,292 @@
+---
+title: "Next.js를 사용한 블로그에서 마크다운 파일과 같은 경로에 이미지 위치시키기"
+createdAt: 2024-06-30
+author: junseokku
+tags: [nextjs, mdx, md, contentlayer, image, paths]
+categories: []
+summary: "Next.js를 사용한 블로그에서 마크다운 파일과 같은 경로에 이미지 파일을 저장하도록 해보자."
+---
+
+이 블로그는 `Next.js`와 `contentlayer`로 만들었습니다. 
+`Next.js`에서 정적 이미지 파일을 참조하기 위해서는 이미지를 `/public` 폴더 안에 위치시켜야 합니다.
+제가 적용한 게시글 경로 방식으로는 마크다운 파일에 이미지를 제대로 제공할 수 없었습니다.
+
+게시글은 프로젝트 루트의 `/posts` 경로에 저장하고 있습니다. 
+`/posts` 하위 구조를 보면, 게시글마다 폴더가 있고 내부엔 `index.mdx` 파일과 이미지 파일이 함께 존재합니다.
+이런식으로 예를 들 수 있습니다.
+
+```text
+posts/
+ ┣ post-one/
+ ┃ ┣ image1.png
+ ┃ ┣ image2.png
+ ┃ ┣ index.md
+ ┣ post-two/
+ ┃ ┣ image.png
+ ┃ ┣ index.md
+```
+
+이런 경로로 만든 이유는 이미지와 마크다운 파일을 같은 경로에 위치시키고 싶었기 때문입니다.
+게시글에 사용된 이미지를 바로 파악할 수 있는 점이 좋았습니다. 
+물론 `/public` 하위에도 똑같은 경로를 만들면 되겠지만 두벌 관리되는 느낌이었습니다.
+따라서 위 구조를 그대로 가져가고 마크다운 파일에선 이런식으로 이미지를 사용하고 싶었습니다.
+```md
+![image1.png](./image1.png)
+```
+
+구글링 결과 저와 같은 고민을 하고 해결하신 분들이 있었고 간단하게 정리해보았습니다.
+
+## 빌드 시 `/public`으로 이미지 파일들을 복사하기
+Next.js에서는 정적 리소스는 `/public`을 통해 제공한다고 말씀드렸습니다.
+빌드 전에 기존 게시글 경로에 있던 이미지들을 `/public`으로 복사하도록 해봅시다.
+
+이를 위해 파일을 쉽게 다룰 수 있게 하는 패키지를 사용할겁니다. 패키지를 설치해줍니다.
+
+```bash
+npm i -D fs-extra
+```
+
+**빌드 전에** 이미지 복사하는 특정 스크립트를 실행하게 합니다.
+`npm run dev` 혹은 `npm run build` [실행 전 특정 스크립트를 실행](https://docs.npmjs.com/cli/v8/using-npm/scripts#pre--post-scripts)시키는 스크립트를 추가해봅시다.
+
+```json {2-3} title="package.json"
+  "scripts": {
+    "predev": "node ./bin/copy-images.mjs",
+    "prebuild": "node ./bin/copy-images.mjs",
+    "dev": "next dev",
+    "build": "next build",
+    // ...
+  }
+```
+
+사전 준비는 마쳤습니다.
+`copy-images.mjs` 파일을 만들어봅시다.
+mjs 확장자인 이유는 ECMAScript modules과 최상위 await를 이용하기 위함입니다. 
+수행하는 기능별로 코드를 나눠서 보겠습니다.
+
+### 기존에 복사했던 `/public` 내용 비우기
+```javascript {7,10}
+import fs from 'fs';
+import path from 'path';
+import fsExtra from 'fs-extra';
+
+const fsPromises = fs.promises;
+/** 이미지를 복사할 위치 */
+const targetDir = './public/images/posts';
+
+// 대상 폴더가 없으면 폴더를 생성합니다. 폴더에 무언가 존재한다면 모두 비워줍니다.
+await fsExtra.emptyDir(targetDir);
+```
+
+### 이미지를 복사하는 함수
+```javascript {2,7,9}
+/** 게시글이 있는 위치 */
+const postsDir = './posts';
+
+const copyImagesToPublic = async (images, slug) => {
+  for (const image of images) {
+    /** 특정 이미지의 기존 경로 */
+    const sourcePath = `${postsDir}/${slug}/${image}`;
+    /** 특정 이미지를 복사할 경로 */
+    const targetPath = `${targetDir}/${slug}/${image}`;
+
+    await fsPromises.copyFile(sourcePath, targetPath);
+  }
+};
+```
+
+### 게시글을 순회하며 이미지를 탐색 후 복사하기
+```javascript {6-8, 16-18, 25-26}
+/** 허용하는 이미지 확장자 리스트  */
+const allowedImageExtensionList = ['.png', '.jpg', '.jpeg', '.gif'];
+
+const createPostImageFoldersForCopy = async () => {
+  /** 모든 게시글 폴더 */
+  const postDirentList = (
+    await fsPromises.readdir(postsDir, { withFileTypes: true })
+  ).filter((file) => file.isDirectory());
+
+  for (const dirent of postDirentList) {
+    const slug = dirent.name;
+    /** 게시글 폴더에 존재하는 파일 */
+    const postsDirFiles = await fsPromises.readdir(`${postsDir}/${slug}`);
+
+    /** 게시글 폴더에 존재하는 이미지 */
+    const images = postsDirFiles.filter((file) =>
+      allowedImageExtensionList.includes(path.extname(file)),
+    );
+
+    if (!images.length) {
+      continue;
+    }
+
+    /** 게시글 폴더 만들고 복사 */
+    await fsPromises.mkdir(`${targetDir}/${slug}`);
+    await copyImagesToPublic(images, slug);
+  }
+};
+```
+`postDirentList`를 만들때 필터링 하는 로직이 있습니다.
+이와 관련된 사항은 [여기 글](https://witch.work/posts/blog-remake-4#23-%EC%9D%B4%EB%AF%B8%EC%A7%80-%EB%B3%B5%EC%82%AC-%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0)에 자세히 설명되어 있습니다.
+
+
+
+### 최종 코드
+```javascript title="bin/copy-images.mjs" showLineNumbers
+import fs from 'fs';
+import path from 'path';
+import fsExtra from 'fs-extra';
+
+const fsPromises = fs.promises;
+/** 이미지를 복사할 위치 */
+const targetDir = './public/images/posts';
+/** 게시글이 있는 위치 */
+const postsDir = './posts';
+/** 허용하는 이미지 확장자 리스트  */
+const allowedImageExtensionList = ['.png', '.jpg', '.jpeg', '.gif'];
+
+const createPostImageFoldersForCopy = async () => {
+  /** 모든 게시글 폴더 */
+  const postDirentList = (
+    await fsPromises.readdir(postsDir, { withFileTypes: true })
+  ).filter((file) => file.isDirectory());
+
+  for (const dirent of postDirentList) {
+    const slug = dirent.name;
+    /** 게시글 폴더에 존재하는 파일 */
+    const postsDirFiles = await fsPromises.readdir(`${postsDir}/${slug}`);
+
+    /** 게시글 폴더에 존재하는 이미지 */
+    const images = postsDirFiles.filter((file) =>
+      allowedImageExtensionList.includes(path.extname(file)),
+    );
+
+    if (!images.length) {
+      continue;
+    }
+
+    /** 게시글 폴더 만들고 복사 */
+    await fsPromises.mkdir(`${targetDir}/${slug}`);
+    await copyImagesToPublic(images, slug);
+  }
+};
+
+const copyImagesToPublic = async (images, slug) => {
+  for (const image of images) {
+    const sourcePath = `${postsDir}/${slug}/${image}`;
+    const targetPath = `${targetDir}/${slug}/${image}`;
+
+    await fsPromises.copyFile(sourcePath, targetPath);
+  }
+};
+
+// 대상 폴더가 없으면 폴더를 생성합니다. 폴더에 무언가 존재한다면 모두 비워줍니다.
+await fsExtra.emptyDir(targetDir);
+await createPostImageFoldersForCopy();
+
+```
+
+일부 변수 값은 본인 프로젝트의 환경에 맞게 변경하여 사용하시면 됩니다. 
+코드를 모두 작성했다면 실제 빌드 스크립트를 실행하고 `/public` 경로로 복사되는지 확인해봅시다.
+
+```bash
+npm run build
+```
+
+```text
+posts/
+ ┣ post-one/
+ ┃ ┣ image1.png
+ ┃ ┣ image2.png
+ ┃ ┣ index.md
+ ┣ post-two/
+ ┃ ┣ image.png
+ ┃ ┣ index.md
+public
+ ┣ images
+ ┃ ┣ posts
+ ┃ ┃ ┣ post-one
+ ┃ ┃ ┃ ┣ image1.png
+ ┃ ┃ ┃ ┗ image2.png
+ ┃ ┃ ┣ post-two
+ ┃ ┃ ┃ ┗ image.png
+```
+
+`/public` 경로에 생긴 이미지는 복사된 이미지이므로 github에 업로드 될 필요가 없습니다.
+`.gitignore`에 복사된 이미지가 존재하는 경로를 추가해줍시다.
+
+```text title=".gitignore"
+/public/images
+```
+
+여기까지 작업했다면, 마크다운 파일에서 `/public`으로 복사된 이미지를 가져오기 위해 절대경로를 사용하면 됩니다. 하지만 절대 경로 대신 상대 경로로 편하게 사용하시고 싶을겁니다.
+```md
+<!-- 절대 경로 - 이미지가 정상적으로 나옴. -->
+![image](/images/posts/post-one/image1.png)
+
+<!-- 상대 경로 - 이미지가 안나옴. -->
+![image](./image1.png)
+```
+이제 그 작업을 해봅시다.
+
+## 마크다운 파일에서 상대경로 이용할 수 있게 하기
+remark 플러그인을 사용할 수 있는 블로그라면, 자체 플러그인을 제작하여 이 문제를 해결할 수 있습니다.
+마크다운 파일은 contentlayer를 통해 HTML 혹은 코드로 변환하는 작업을 거칩니다.
+변환 작업에서 플러그인을 사용할 수 있고, 이 플러그인에서 이미지에서 사용된 상대 경로를 절대 경로로 변환하는 작업을 수행할겁니다.
+
+필요한 패키지부터 설치합니다.
+
+```bash
+npm i -D unist-util-visit
+```
+
+`unist-util-visit`는 remark에서 사용하는 syntax tree를 순회할 수 있게 하는 라이브러리입니다.
+간단히 말해 작성한 마크다운 파일에서 특정 노드를 찾고 속성을 변환하게 할 수 있습니다.
+이미지를 참조할 때 `./image.png`처럼 작성한 상대 경로를 `/images/posts/post-one/image1.png` 절대 경로로 변환하는 작업을 할테니 제게 부합한 라이브러리입니다.
+
+해당 포스팅에서는 목적 달성을 위한 내용만 있으므로 자세한건 [unified](https://github.com/unifiedjs/unified), [remark](https://github.com/remarkjs/remark/tree/main), [mdast](https://github.com/syntax-tree/mdast) 키워드를 중심으로 검색하여 확인하시면 됩니다.
+
+`transform-image.src.mjs` 파일을 만듭니다.
+
+```js title="plugins/transform-image.src.mjs"
+import { visit } from 'unist-util-visit';
+
+const imgDirInsidePublic = 'images/posts';
+
+export default function transformImgSrc() {
+  return (tree, file) => {
+    visit(tree, 'paragraph', (node) => {
+      const filePath = file.data.rawDocumentData.flattenedPath;
+      const image = node.children.find((child) => child.type === 'image');
+
+      if (image) {
+        const fileName = image.url.replace('./', '');
+        image.url = `/${imgDirInsidePublic}/${filePath}/${fileName}`;
+      }
+    });
+  };
+}
+```
+- 마크다운의 이미지는 변환을 거치면 `p > img`로 표현됩니다. 
+- img의 url에서 상대 경로를 제거합니다. 
+- `public 경로` + `게시글 경로` + `이미지 파일명`을 합쳐 img의 url을 절대 경로로 수정합니다.
+
+이 플러그인을 변환 과정에 적용하는 작업이 남았습니다. `contentlayer.config.ts` 파일을 수정해줍시다. 
+```ts
+export default makeSource({
+  // ...
+  mdx: { remarkPlugins: [transformImgSrc] },
+  // or
+  markdown: { remarkPlugins: [transformImgSrc] },
+  // ...
+});
+```
+
+이렇게 되면 모든 작업이 끝났습니다.
+마크다운과 같은 경로에 이미지를 위치시키고, 상대 경로로 이미지를 참조하여 마크다운을 작성해봅시다.
+빌드 후 확인해보면 정상적으로 이미지가 나오는 걸 확인할 수 있습니다.
+
+## 참고 자료
+- [블로그 만들기 - 4. 이미지 경로 문제 해결](https://witch.work/posts/blog-remake-4)
+- [Storing Images and Markdown Files in One Folder in Next.js](https://www.codeconcisely.com/posts/nextjs-storing-images-next-to-markdown/)
+- [Using Relative Paths in Markdown Images With Next.JS](https://www.codeconcisely.com/posts/nextjs-relative-image-paths-in-markdown/)

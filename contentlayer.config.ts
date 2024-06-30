@@ -4,7 +4,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'; // 제목에 자동으로 앵커 태그를 추가해주는 라이브러리
 import rehypePrettyCode from 'rehype-pretty-code';
-import transformImgSrc from './plugins/chnage-image.src.mjs';
+import transformImgSrc from './plugins/transform-image.src.mjs';
 import { type Pluggable } from 'unified';
 
 export const Post = defineDocumentType(() => ({
