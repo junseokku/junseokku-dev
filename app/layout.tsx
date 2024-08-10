@@ -1,11 +1,11 @@
-import './styles/globals.css';
 import type { Metadata } from 'next';
+import { Footer } from './components/Footer';
 import { Header } from './components/Header';
-import { pretendard } from './libs/font';
 import { Providers } from './components/Providers';
 import { SEOConfig } from './constants/SEOConfig';
-import { GoogleAnlytics } from './libs/GoogleAnalytics';
-import { Footer } from './components/Footer';
+import { pretendard } from './libs/font';
+import { GoogleAnalytics } from './libs/GoogleAnalytics';
+import './styles/globals.css';
 
 export default function RootLayout({
   children,
@@ -25,7 +25,7 @@ export default function RootLayout({
           </div>
         </Providers>
       </body>
-      <GoogleAnlytics />
+      {process.env.NODE_ENV !== 'development' && <GoogleAnalytics />}
     </html>
   );
 }

@@ -1,6 +1,6 @@
 import Script from 'next/script';
 
-export const GoogleAnlytics = () => {
+export const GoogleAnalytics = () => {
   return (
     <>
       <Script
