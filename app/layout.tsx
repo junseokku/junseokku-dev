@@ -3,8 +3,8 @@ import { Footer } from './components/Footer';
 import { Header } from './components/Header';
 import { Providers } from './components/Providers';
 import { SEOConfig } from './constants/SEOConfig';
-import { pretendard } from './libs/font';
-import { GoogleAnalytics } from './libs/GoogleAnalytics';
+import { pretendard } from './lib/font';
+import { GoogleAnalytics } from './lib/GoogleAnalytics';
 import './styles/globals.css';
 
 export default function RootLayout({

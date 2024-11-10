@@ -1,9 +1,9 @@
-import { format, parseISO } from 'date-fns';
-import { allPosts } from 'contentlayer/generated';
-import { useMDXComponent } from 'next-contentlayer/hooks';
-import { Metadata } from 'next';
+import { Giscus } from '@/lib/Giscus';
 import { myInfo } from 'app/constants/myInfo';
-import { Giscus } from 'app/libs/Giscus';
+import { allPosts } from 'contentlayer/generated';
+import { format, parseISO } from 'date-fns';
+import { Metadata } from 'next';
+import { useMDXComponent } from 'next-contentlayer/hooks';
 
 type Params = { params: { slug: string } };
 
