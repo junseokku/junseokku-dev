@@ -1,5 +1,7 @@
+import { myInfo } from '@/constants/myInfo';
+import { SEOConfig } from '@/constants/SEOConfig';
 import { GitHubLogoIcon, LinkedInLogoIcon } from '@radix-ui/react-icons';
-import { myInfo } from './constants/myInfo';
+import { Metadata } from 'next';
 
 const EXTERNAL_LINKS = [
   // TODO - Email, Portfolio
@@ -28,3 +30,7 @@ export default function Home() {
     </main>
   );
 }
+
+export const metadata: Metadata = {
+  ...SEOConfig,
+};

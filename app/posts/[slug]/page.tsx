@@ -1,9 +1,10 @@
 import { posts } from '#site/content';
+import { MDXContent } from '@/components/mdx-content';
 import { Giscus } from '@/lib/Giscus';
 import { myInfo } from 'app/constants/myInfo';
+import { SEOConfig } from 'app/constants/SEOConfig';
 import { format, parseISO } from 'date-fns';
 import { Metadata } from 'next';
-import { MDXContent } from '../../components/mdx-content';
 
 type Params = { params: { slug: string } };
 
@@ -55,6 +56,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const url = `${myInfo.blog.url}${targetPost.permalink}`;
 
   return {
+    ...SEOConfig,
     title,
     description,
     alternates: { canonical: url },

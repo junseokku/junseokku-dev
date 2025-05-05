@@ -1,4 +1,5 @@
 import { posts } from '#site/content';
+import { SEOConfig } from '@/constants/SEOConfig';
 import { PostCard } from 'app/components/PostCard';
 import { myInfo } from 'app/constants/myInfo';
 import { compareDesc } from 'date-fns';
@@ -24,6 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const url = `${myInfo.blog.url}/posts`;
 
   return {
+    ...SEOConfig,
     title,
     description,
     alternates: { canonical: url },
