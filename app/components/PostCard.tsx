@@ -1,9 +1,10 @@
+import { Post } from '#site/content';
 import { format, parseISO } from 'date-fns';
 import Link from 'next/link';
 
 export function PostCard(post: Post) {
   return (
-    <Link href={post.url}>
+    <Link href={post.permalink}>
       <h2 className="mb-1 text-xl font-semibold">{post.title}</h2>
       <time
         dateTime={post.createdAt}

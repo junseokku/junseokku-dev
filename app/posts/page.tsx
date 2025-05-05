@@ -1,16 +1,17 @@
+import { posts } from '#site/content';
 import { PostCard } from 'app/components/PostCard';
 import { myInfo } from 'app/constants/myInfo';
 import { compareDesc } from 'date-fns';
 import { type Metadata } from 'next';
 
 const PostLayout = () => {
-  const posts = allPosts.sort((a, b) =>
+  const sortedPosts = posts.sort((a, b) =>
     compareDesc(new Date(a.createdAt), new Date(b.createdAt)),
   );
 
   return (
     <main className="flex flex-col gap-5">
-      {posts.map((post, idx) => (
+      {sortedPosts.map((post, idx) => (
         <PostCard key={idx} {...post} />
       ))}
     </main>

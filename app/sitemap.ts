@@ -1,3 +1,4 @@
+import { posts } from '#site/content';
 import { MetadataRoute } from 'next';
 import { myInfo } from './constants/myInfo';
 
@@ -22,8 +23,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
 }
 
 const generateSitemapPosts = (): MetadataRoute.Sitemap => {
-  return allPosts.map((post) => ({
-    url: `${myInfo.blog.url}/posts/${post._raw.flattenedPath}`,
+  return posts.map((post) => ({
+    url: `${myInfo.blog.url}/posts/${post.slug}`,
     lastModified: new Date(post.updatedAt ?? post.createdAt),
     changeFrequency: 'daily',
     priority: 0.8,

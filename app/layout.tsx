@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
 import { Providers } from './components/Providers';
@@ -31,3 +31,8 @@ export default function RootLayout({
 }
 
 export const metadata: Metadata = SEOConfig;
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+};

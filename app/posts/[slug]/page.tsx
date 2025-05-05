@@ -1,18 +1,19 @@
+import { posts } from '#site/content';
 import { Giscus } from '@/lib/Giscus';
 import { myInfo } from 'app/constants/myInfo';
 import { format, parseISO } from 'date-fns';
 import { Metadata } from 'next';
+import { MDXContent } from '../../components/mdx-content';
 
 type Params = { params: { slug: string } };
 
 export const generateStaticParams = async () =>
-  allPosts.map((post) => ({ slug: post._raw.flattenedPath }));
+  posts.map((post) => ({ slug: post.slug }));
 
-const PostLayout = ({ params }: Params) => {
-  const post = allPosts.find((post) => post._raw.flattenedPath === params.slug);
-  if (!post) throw new Error(`Post not found for slug: ${params.slug}`);
-
-  const MDXContent = useMDXComponent(post.body.code);
+const PostLayout = async ({ params }: Params) => {
+  const { slug } = await params;
+  const post = posts.find((post) => post.slug.includes(slug));
+  if (!post) throw new Error(`Post not found for slug: ${slug}`);
 
   return (
     <main className="flex flex-col gap-8">
@@ -26,14 +27,14 @@ const PostLayout = ({ params }: Params) => {
             {format(parseISO(post.createdAt), 'yyyy.MM.dd')}
           </time>
           <span className="text-xs text-textGrayColor">|</span>
-          <span className="text-xs text-textGrayColor">{`${post.readingMinutes} min`}</span>
+          <span className="text-xs text-textGrayColor">{`${post.metadata.readingTime} min`}</span>
         </div>
         <h1 className="text-3xl font-bold">{post.title}</h1>
       </div>
       {/* post article */}
       <article className="prose prose-stone dark:prose-invert max-w-3xl">
         <hr className="border-1 border-borderColor" />
-        <MDXContent />
+        <MDXContent code={post.content} />
       </article>
       {/* TODO - post footer */}
       {/* post comment */}
@@ -43,16 +44,14 @@ const PostLayout = ({ params }: Params) => {
 };
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
-  const targetPost = allPosts.find(
-    (post) => post._raw.flattenedPath === params.slug,
-  );
+  const targetPost = posts.find((post) => post.slug.includes(params.slug));
 
   // TODO redirect to 404
   if (!targetPost) throw new Error(`Post not found for slug: ${params.slug}`);
 
   const title = `${myInfo.blog.name}, ${targetPost.title}`;
   const description = `${myInfo.blog.name}, ${targetPost.summary}`;
-  const url = `${myInfo.blog.url}${targetPost.url}`;
+  const url = `${myInfo.blog.url}${targetPost.permalink}`;
 
   return {
     title,
