@@ -44,10 +44,11 @@ const PostLayout = async ({ params }: Params) => {
 };
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
-  const targetPost = posts.find((post) => post.slug.includes(params.slug));
+  const { slug } = await params;
+  const targetPost = posts.find((post) => post.slug.includes(slug));
 
   // TODO redirect to 404
-  if (!targetPost) throw new Error(`Post not found for slug: ${params.slug}`);
+  if (!targetPost) throw new Error(`Post not found for slug: ${slug}`);
 
   const title = `${myInfo.blog.name}, ${targetPost.title}`;
   const description = `${myInfo.blog.name}, ${targetPost.summary}`;

@@ -151,6 +151,7 @@ export default defineConfig({
     data: '.velite',
     assets: 'public/static',
     base: '/static/',
+    name: '[name]-[hash:6].[ext]',
     clean: true,
   },
   collections: { categories, tags, posts }, //options, pages
