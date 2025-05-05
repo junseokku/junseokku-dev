@@ -1,6 +1,5 @@
 import { MetadataRoute } from 'next';
 import { myInfo } from './constants/myInfo';
-import { allPosts } from 'contentlayer/generated';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const sitemapPosts = generateSitemapPosts();

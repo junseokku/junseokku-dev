@@ -1,6 +1,5 @@
 import { PostCard } from 'app/components/PostCard';
 import { myInfo } from 'app/constants/myInfo';
-import { allPosts } from 'contentlayer/generated';
 import { compareDesc } from 'date-fns';
 import { type Metadata } from 'next';
 

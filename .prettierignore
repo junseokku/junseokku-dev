@@ -1,7 +1,6 @@
 # Ignore artifacts
 
 .next/**/*
-.contentlayer/**/*
 node_modules/**/*/
 
 **/*.mdx
