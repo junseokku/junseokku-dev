@@ -1,4 +1,5 @@
 import { exec } from 'node:child_process';
+import { basename } from 'node:path';
 import { promisify } from 'node:util';
 import rehypePrettyCode from 'rehype-pretty-code';
 import { defineCollection, defineConfig, s } from 'velite';
@@ -126,7 +127,7 @@ const posts = defineCollection({
       tags: s.array(s.string()),
       categories: s.array(s.string()),
       summary: s.string(),
-      slug: s.path(),
+      slug: s.path().transform<string>((data) => basename(data)),
       // date: s.isodate(),
       updatedAt: s.isodate().optional(),
       // cover: s.image().optional(),
@@ -142,7 +143,7 @@ const posts = defineCollection({
       excerpt: s.excerpt(),
       content: s.markdown(),
     })
-    .transform((data) => ({ ...data, permalink: `/${data.slug}` })),
+    .transform((data) => ({ ...data, permalink: `/posts/${data.slug}` })),
 });
 
 export default defineConfig({

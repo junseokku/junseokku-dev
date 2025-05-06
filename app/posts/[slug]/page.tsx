@@ -6,14 +6,14 @@ import { SEOConfig } from 'app/constants/SEOConfig';
 import { format, parseISO } from 'date-fns';
 import { Metadata } from 'next';
 
-type Params = { params: { slug: string } };
+type Params = { params: Promise<{ slug: string }> };
 
 export const generateStaticParams = async () =>
   posts.map((post) => ({ slug: post.slug }));
 
 const PostLayout = async ({ params }: Params) => {
   const { slug } = await params;
-  const post = posts.find((post) => post.slug.includes(slug));
+  const post = posts.find((post) => post.slug === slug);
   if (!post) throw new Error(`Post not found for slug: ${slug}`);
 
   return (
@@ -46,7 +46,7 @@ const PostLayout = async ({ params }: Params) => {
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const targetPost = posts.find((post) => post.slug.includes(slug));
+  const targetPost = posts.find((post) => post.slug === slug);
 
   // TODO redirect to 404
   if (!targetPost) throw new Error(`Post not found for slug: ${slug}`);
