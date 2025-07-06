@@ -138,12 +138,19 @@ const posts = defineCollection({
       // categories: s.array(s.string()).default(['Journal']),
       // tags: s.array(s.string()).default([]),
       meta: meta,
-      toc: s.toc(),
+      toc: s.toc({
+        maxDepth: 3,
+        minDepth: 1,
+      }),
       metadata: s.metadata(),
       excerpt: s.excerpt(),
       content: s.markdown(),
     })
-    .transform((data) => ({ ...data, permalink: `/posts/${data.slug}` })),
+    .transform((data) => ({
+      ...data,
+      lastModified: timestamp(),
+      permalink: `/posts/${data.slug}`,
+    })),
 });
 
 export default defineConfig({
