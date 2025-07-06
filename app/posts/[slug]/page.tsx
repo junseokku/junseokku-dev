@@ -1,10 +1,11 @@
-import { posts } from '#site/content';
+import { Post, posts } from '#site/content';
 import { MDXContent } from '@/components/mdx-content';
 import { Giscus } from '@/lib/Giscus';
 import { myInfo } from 'app/constants/myInfo';
 import { SEOConfig } from 'app/constants/SEOConfig';
 import { format, parseISO } from 'date-fns';
 import { Metadata } from 'next';
+import Link from 'next/link';
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -33,14 +34,33 @@ const PostLayout = async ({ params }: Params) => {
         <h1 className="text-3xl font-bold">{post.title}</h1>
       </div>
       {/* post article */}
-      <article className="prose prose-stone dark:prose-invert max-w-3xl">
+      <article className="relative prose prose-stone dark:prose-invert max-w-3xl">
         <hr className="border-1 border-borderColor" />
         <MDXContent code={post.content} />
+        {/* <FloatingTOC toc={post.toc} /> */}
       </article>
       {/* TODO - post footer */}
       {/* post comment */}
       <Giscus />
     </main>
+  );
+};
+
+/**
+ * 개발하면서 이룰 것
+ * 1. position: sticky 동작을 완벽히 알기 -> 지금 적용했는데 적용 안되는 이유 파악하기
+ * 2. 현재 브라우저 스크린보다 overflow-x 초과 시 개행되게 만들기
+ *    - 이건 overflow-x-hidden 속성으로 적용해보았는데 대체 필요함.
+ */
+const FloatingTOC = ({ toc }: { toc: Post['toc'] }) => {
+  return (
+    <div className="sticky top-0 right-0 overflow-x-hidden">
+      {toc.map((title) => (
+        <div key={title.url}>
+          <Link href={`#${title.url}`}>{title.title}</Link>
+        </div>
+      ))}
+    </div>
   );
 };
 
